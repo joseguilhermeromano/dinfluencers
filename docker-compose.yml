@@ -9,7 +9,7 @@ services:
     restart: always
     container_name: dinflu
     environment:
-      XDEBUG_MODE: coverage
+      XDEBUG_MODE: debug
       XDEBUG_SESSION: VSCODE
     extra_hosts:
       - 'host.docker.internal:host-gateway'
