@@ -1,19 +1,10 @@
+import './bootstrap';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import HelloWorld from './components/HelloWorld';
 
-const App = () => {
-    return (
-        <>
-            <HelloWorld name="Mundo" />
-        </>
-    );
-};
+import Home from './components/home';
 
-// Certifique-se de que o elemento com o ID 'app' existe no seu HTML
-const rootElement = document.getElementById('app');
+ReactDOM.createRoot(document.getElementById('app') as HTMLElement).render(
+    <Home />
+);
 
-if (rootElement) {
-    const root = ReactDOM.createRoot(rootElement as HTMLElement);
-    root.render(<App />);
-}
