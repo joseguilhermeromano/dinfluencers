@@ -1,0 +1,65 @@
+version: '3'
+services:
+  dinflu:
+    build:
+      args:
+        user: www-data
+        uid: 33
+      context: .
+    restart: always
+    container_name: dinflu
+    environment:
+      XDEBUG_MODE: coverage
+      XDEBUG_SESSION: VSCODE
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    volumes:
+      - ./dinflu:/var/www/
+      - ./docker/php/config/timezone.ini:/usr/local/etc/php/conf.d/timezone.ini
+      - ./docker/php/config/php.ini:/usr/local/etc/php/php.ini
+      - ./docker/php/config/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+      - ./docker/php/fpm:/usr/local/etc/php-fpm.d
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx/sites/:/etc/nginx/conf.d/
+    ports:
+      - 80:80
+      - 3000:3000
+    networks:
+      - netLocal
+
+  db:
+    container_name: mysql
+    image: mysql:8.0
+    command: mysqld --default-authentication-plugin=caching_sha2_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: sandbox
+      MYSQL_PASSWORD: 12345678
+      MYSQL_USER: dbuser
+      TZ: America/Sao_Paulo
+    ports:
+      - '3306:3306'
+    volumes:
+      - './docker/db/data:/var/lib/mysql'
+      - './docker/db/my.cnf:/etc/mysql/conf.d/my.cnf'
+      - './docker/db/sql:/docker-entrypoint-initdb.d'
+    user: "999:999"
+    networks:
+      - netLocal
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - 8081:80
+    environment:
+      PMA_HOST: db
+      MYSQL_USERNAME: dbuser
+      MYSQL_ROOT_PASSWORD: 12345678
+      MYSQL_DATABASE: sandbox
+    networks:
+      - netLocal
+
+networks:
+  netLocal:
+    driver: bridge
